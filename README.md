@@ -10,13 +10,13 @@
 Tecnologias: HTML, CSS, JavaScript, PostgreSQL 
 ---
 ### Pastas:
--Frontend:
+- Frontend:
 1. Pages: login.html, register.html, home.html, profile.html, chat.html
--Backend:
--Banco de dados:
+- Backend:
+- Banco de dados:
 ---
 Entidades do banco: 
--User: idUser, name, email, passwordHash, avatar, createdAt
--Chat: idChat, type (public, private, group)
--Message: idMessage, content, idUser, idChat, createdAt
--ParticipantChat: idUser, idChat
+- User: idUser, name, email, passwordHash, avatar, createdAt
+- Chat: idChat, type (public, private, group)
+- Message: idMessage, content, idUser, idChat, createdAt
+- ParticipantChat: idUser, idChat
