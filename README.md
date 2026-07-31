@@ -29,6 +29,9 @@ curl -X POST http://localhost:3000/users \
 -H "Content-Type: application/json" \
 -d '{"username":"Pablo","email":"pablo@gmail.com","password":"123456"}'
 
+curl -X POST http://localhost:3000/login -H "Content-Type: application/json" -d '{"username":"Pablo","password":"123456"}'
+
+
 docker exec -it chat-postgres psql -U postgres -d chatapp
 
 CREATE TABLE users( 
