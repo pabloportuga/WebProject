@@ -17,7 +17,7 @@ Tecnologias: HTML, CSS, JavaScript, PostgreSQL
 ---
 Entidades do banco: 
 - Users: id(INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY), username(VARCHAR(16)NOT NULL UNIQUE), email(VARCHAR(64)NOT NULL UNIQUE), password_hash(VARCHAR(255)), avatar_url(TEXT NULL), created_at(TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)
-- Chats: id(INT), type (public, private, group)
+- Chats: id(INT), type (public, private, group), name, created_at, created_by
 - Messages: id(INT), content(TEXT), user_id, chat_id, created_at
 - Chat_participants: user_id, chat_id
 
@@ -31,6 +31,10 @@ curl -X POST http://localhost:3000/users \
 
 curl -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"username":"Pablo","password":"123456"}'
 
+curl -X POST http://localhost:3000/chats/private \
+-H "Authorization: Bearer SEU_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{"receiverId": 7}'
 
 docker exec -it chat-postgres psql -U postgres -d chatapp
 
