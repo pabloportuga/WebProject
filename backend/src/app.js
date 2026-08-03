@@ -10,6 +10,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", usersRoutes);
-app.use("/login", authRoutes);
+app.use("/auth", authRoutes);
+
 
 module.exports = app;
