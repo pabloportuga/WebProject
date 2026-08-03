@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
-router.post('/', authController.login);
+const authMiddleware = require("../middlewares/authMiddleware")
 
+
+router.post('/login', authController.login);
+router.get("/me", authMiddleware.validarToken, authController.me)
 module.exports = router;
