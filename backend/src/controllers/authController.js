@@ -1,5 +1,7 @@
 const pool = require("../database/connection")
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require('dotenv').config();
 
 async function login(req, res) {
   try {
@@ -25,11 +27,17 @@ async function login(req, res) {
         message: "Senha incorreta!"
       });
     }
+
+    const usuario = resultado.rows[0];
+    const token = jwt.sign({
+      id: usuario.id,
+      username: usuario.username
+    }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
     return res.status(200).json({
-      message: "Login ocorreu com sucesso!"
+      message: "Login ocorreu com sucesso!",
+      token
     });
-    // Criar token
-    // Retornar token
 
   } catch (error) {
     console.error(error);
@@ -39,6 +47,11 @@ async function login(req, res) {
   }
 }
 
+function me(req, res) {
+  return res.status(200).json(req.user);
+}
+
 module.exports = {
-  login
+  login,
+  me
 }
