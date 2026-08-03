@@ -8,6 +8,7 @@
 5. Perfil
 
 Comandos úteis
+
 docker compose up -d
 
 node src/server.js
@@ -17,8 +18,6 @@ curl -X POST http://localhost:3000/users -H "Content-Type: application/json" -d 
 curl -X POST http://localhost:3000/users -H "Content-Type: application/json" -d '{"username":"Rosa","email":"rosa@gmail.com","password":"123456789"}'
 
 curl -X POST http://localhost:3000/users -H "Content-Type: application/json" -d '{"username":"Debora","email":"Debora@gmail.com","password":"123456789"}'
-
-
 
 curl -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"username":"Pablo","password":"123456789"}'
 

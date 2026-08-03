@@ -17,7 +17,6 @@ CREATE TABLE chats (
 );
 
 CREATE TABLE chat_participants (
-
     chat_id INT NOT NULL,
     user_id INT NOT NULL,
     joined_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
