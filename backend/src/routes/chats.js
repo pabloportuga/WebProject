@@ -7,5 +7,9 @@ router.post('/private',
   authMiddleware.validarToken,
   chatsController.createPrivateChat
 );
+router.get("/",
+  authMiddleware.validarToken,
+  chatsController.getChats
+);
 
 module.exports = router;
