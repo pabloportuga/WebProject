@@ -5,5 +5,9 @@ const authMiddleware = require("../middlewares/authMiddleware")
 
 
 router.post('/login', authController.login);
-router.get("/me", authMiddleware.validarToken, authController.me)
+
+router.get("/me",
+  authMiddleware.validarToken,
+  authController.me
+);
 module.exports = router;
