@@ -87,6 +87,21 @@ async function createPrivateChat(req, res) {
   }
 }
 
+async function getChats(req, res) {
+
+  const userId = req.user.id;
+  const chats = await pool.query(`
+    SELECT chats.id, chats.type, chats.name
+    FROM chats
+    JOIN chat_participants
+    ON chats.id = chat_participants.chat_id
+    WHERE chat_participants.user_id = $1
+    `,
+    [userId]);
+  return res.json(chats.rows);
+}
+
 module.exports = {
-  createPrivateChat
+  createPrivateChat,
+  getChats
 }
