@@ -1,13 +1,33 @@
-const pool = require("../database/connection")
+const pool = require("../database/connection");
 const bcrypt = require("bcrypt");
+
+function validarEmail(email) {
+  const padrao = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return padrao.test(email);
+}
+
 async function createUser(req, res) {
   try {
-    console.log(req.body)
     const { username, email, password } = req.body;
     // teste para valores nulos ou em branco
     if (!username || !email || !password || username.trim() === '' || email.trim() === '' || password.trim() === '') {
       return res.status(400).json({
         message: "Os valores não podem ser nulos ou em branco!"
+      });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({
+        message: "A senha deve conter mais de 8 caracteres!"
+      });
+    }
+    if (!validarEmail(email)) {
+      return res.status(400).json({
+        message: "E-mail inválido!"
+      });
+    }
+    if (username.length < 3 || username.length > 16) {
+      return res.status(400).json({
+        message: "Usuário inválido!"
       });
     }
     const saltRounds = 10;
@@ -31,6 +51,7 @@ async function createUser(req, res) {
   }
 
 }
+
 module.exports = {
   createUser
 }

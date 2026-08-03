@@ -5,7 +5,6 @@ require('dotenv').config();
 
 async function login(req, res) {
   try {
-    console.log(req.body);
     const { username, password } = req.body;
 
     if (!username || !password || username.trim() === '' || password.trim() === '') {

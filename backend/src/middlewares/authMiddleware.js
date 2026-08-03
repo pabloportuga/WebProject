@@ -17,7 +17,7 @@ async function validarToken(req, res, next) {
         //mudar em produção para Authorization header inválido
       });
     }
-    const [bearer, token] = partes
+    const [bearer, token] = partes;
     if (bearer !== "Bearer") {
       return res.status(401).json({
         message: "Bearer não encontrado!"
