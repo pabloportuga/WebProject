@@ -23,16 +23,45 @@ async function createPrivateChat(req, res) {
          message: "Usuário não encontrado!"
        });
     }
-    const consulta = await pool.query('SELECT chats.id, chat_participants.user_id FROM chats JOIN chat_participants ON chats.id = chat_participants.chat_id');
-
-        // verificar se já existe chat
-
-        // criar chat
-
-        // adicionar participantes
-
-        // retornar sucesso
-
+    const consulta = await pool.query(
+      `
+        SELECT chats.id
+        FROM chats
+        JOIN chat_participants
+          ON chats.id = chat_participants.chat_id
+        WHERE chats.type = 'private'
+          AND chat_participants.user_id IN ($1, $2)
+        GROUP BY chats.id
+        HAVING COUNT(chat_participants.user_id) = 2
+      `,
+      [creatorId, receiverId]
+    );
+    if (consulta.rows.length > 0) {
+      return res.status(409).json({
+        message: "Esse chat privado já existe!"
+      })
+    }
+    const resultadoId = await pool.query(
+      `
+      INSERT INTO chats(type, name, created_by)
+      VALUES($1, $2, $3)
+      RETURNING id`,
+      ['private', null, creatorId]
+    );
+    const chatId = resultadoId.rows[0].id;
+    await pool.query(
+      `
+      INSERT INTO chat_participants(chat_id, user_id)
+      VALUES ($1, $2),
+      ($1, $3)
+      `,
+      [chatId, creatorId, receiverId]
+    );
+    console.log(consulta);
+    return res.status(200).json({
+      message: "Chat criado com sucesso!",
+      chatId
+    });
   } catch (error) {
      console.error(error);
 
