@@ -12,4 +12,9 @@ router.get("/",
   chatsController.getChats
 );
 
+router.get("/:id/messages",
+  authMiddleware.validarToken,
+  chatsController.getMessages
+);
+
 module.exports = router;
