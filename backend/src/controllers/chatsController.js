@@ -88,20 +88,72 @@ async function createPrivateChat(req, res) {
 }
 
 async function getChats(req, res) {
+  try {
+    const userId = req.user.id;
+    const chats = await pool.query(`
+      SELECT chats.id, chats.type, chats.name
+      FROM chats
+      JOIN chat_participants
+      ON chats.id = chat_participants.chat_id
+      WHERE chat_participants.user_id = $1
+      `,
+      [userId]);
+    return res.json(chats.rows);
 
-  const userId = req.user.id;
-  const chats = await pool.query(`
-    SELECT chats.id, chats.type, chats.name
-    FROM chats
-    JOIN chat_participants
-    ON chats.id = chat_participants.chat_id
-    WHERE chat_participants.user_id = $1
-    `,
-    [userId]);
-  return res.json(chats.rows);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+       message: error.message
+    });
+  }
 }
 
+async function getMessages(req, res) {
+  try {
+    const userId = req.user.id;
+    const chatId = Number(req.params.id);
+    if (Number.isNaN(chatId)) {
+      return res.status(400).json({
+        message: "Chat inválido."
+      });
+    }
+    const participantes = await pool.query(`
+      SELECT 1
+      FROM chat_participants
+      WHERE chat_id = $1
+      AND user_id = $2
+      `,
+      [chatId, userId]
+    );
+    if (participantes.rows.length === 0) {
+      return res.status(403).json({
+        message: "Você não tem acesso a este chat!"
+      });
+    }
+
+    const mensagens = await pool.query(
+      `
+      SELECT id, sender_id, content, created_at, edited_at
+      FROM messages
+      WHERE chat_id = $1
+      AND deleted_at IS NULL
+      ORDER BY created_at ASC;
+      `,
+      [chatId]
+    );
+    return res.status(200).json(mensagens.rows);
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: error.message
+    });
+  }
+}
 module.exports = {
   createPrivateChat,
-  getChats
+  getChats,
+  getMessages
 }
