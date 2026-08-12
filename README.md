@@ -29,6 +29,8 @@ curl -H "Authorization: Bearer TOKEN" http://localhost:3000/chats
 
 curl -H "Authorization: Bearer TOKEN" http://localhost:3000/chats/1/messages
 
+curl "http://localhost:3000/chats/1/messages?limit=20&offset=20" -H "Authorization: Bearer SEU_TOKEN"
+
 INSERT INTO messages (chat_id, sender_id, content) VALUES ('1','1','Primeira mensagem de teste!');
 
 curl -X POST http://localhost:3000/chats/5/messages \
