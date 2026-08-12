@@ -21,4 +21,9 @@ router.post('/:id/messages',
   authMiddleware.validarToken,
   chatsController.sendMessage
 );
+
+router.patch('/messages/:id',
+  authMiddleware.validarToken,
+  chatsController.editMessage
+);
 module.exports = router;
