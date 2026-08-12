@@ -26,4 +26,9 @@ router.patch('/messages/:id',
   authMiddleware.validarToken,
   chatsController.editMessage
 );
+
+router.delete('/messages/:id',
+  authMiddleware.validarToken,
+  chatsController.deleteMessage
+);
 module.exports = router;
