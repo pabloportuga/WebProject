@@ -152,8 +152,70 @@ async function getMessages(req, res) {
     });
   }
 }
+
+async function sendMessage(req, res) {
+  try {
+    const chatId = Number(req.params.id);
+    const userId = req.user.id;
+    const { content } = req.body;
+
+    if (Number.isNaN(chatId)) {
+      return res.status(400).json({
+        message: "Chat inválido."
+      });
+    }
+    if (!content || content.trim() === '') {
+      return res.status(400).json({
+        message: "A mensagem não existe ou está vazia!"
+      });
+    }
+    if (content.length > 2000) {
+      return res.status(400).json({
+        message: "A mensagem é muito longa!"
+      });
+    }
+
+    const participantes = await pool.query(
+      `
+      SELECT 1
+      FROM chat_participants
+      WHERE chat_id = $1
+      AND user_id = $2
+      `,
+      [chatId, userId]
+    );
+
+    if (participantes.rows.length === 0) {
+      return res.status(403).json({
+        message: "Você não tem acesso a este chat!"
+      });
+    }
+
+    const novaMensagem = await pool.query(
+      `
+      INSERT INTO messages(chat_id, sender_id, content)
+      VALUES ($1, $2, $3)
+      RETURNING id, chat_id, sender_id, content, created_at, edited_at;
+      `,
+      [chatId, userId, content]
+    );
+
+    return res.status(201).json({
+      message: "Mensagem criada com sucesso!",
+      novaMensagem: novaMensagem.rows[0]
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Um erro aconteceu!"
+    });
+  }
+
+}
 module.exports = {
   createPrivateChat,
   getChats,
-  getMessages
+  getMessages,
+  sendMessage
 }
