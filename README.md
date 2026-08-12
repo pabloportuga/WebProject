@@ -42,3 +42,6 @@ curl -X PATCH http://localhost:3000/chats/messages/1 \
   -H "Authorization: Bearer SEU_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"content":"Mensagem editada!"}'
+
+curl -X DELETE http://localhost:3000/chats/messages/1 \
+  -H "Authorization: Bearer SEU_TOKEN"
