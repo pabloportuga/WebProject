@@ -213,9 +213,73 @@ async function sendMessage(req, res) {
   }
 
 }
+
+async function editMessage(req, res) {
+  try {
+    const userId = req.user.id;
+    const messageId = Number(req.params.id);
+    const { content } = req.body;
+
+    if (Number.isNaN(messageId)) {
+      return res.status(400).json({
+        message: "Mensagem inválida."
+      });
+    }
+    if (!content || content.trim() === '') {
+      return res.status(400).json({
+        message: "A mensagem não pode ser vazia!"
+      });
+    }
+    if (content.length > 2000) {
+      return res.status(400).json({
+        message: "A mensagem é muito longa!"
+      });
+    }
+
+    const mensagem = await pool.query(
+      `
+      SELECT id
+      FROM messages
+      WHERE id = $1
+      AND sender_id = $2
+      AND deleted_at IS NULL
+      `,
+      [messageId, userId]
+    );
+
+    if (mensagem.rows.length === 0) {
+      return res.status(404).json({
+        message: "Mensagem não encontrada ou você não pode editá-la."
+      });
+    }
+
+    const mensagemEditada = await pool.query(
+      `
+      UPDATE messages
+      SET content = $1, edited_at = CURRENT_TIMESTAMP
+      WHERE id = $2
+      RETURNING id, chat_id, sender_id, content, created_at, edited_at
+      `,
+      [content, messageId]
+    );
+
+    return res.status(200).json({
+      message: "Mensagem editada com sucesso!",
+      mensagem: mensagemEditada.rows[0]
+    });
+
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Um erro aconteceu!"
+    });
+  }
+}
 module.exports = {
   createPrivateChat,
   getChats,
   getMessages,
-  sendMessage
+  sendMessage,
+  editMessage
 }
