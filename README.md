@@ -13,7 +13,7 @@ docker compose up -d
 
 node src/server.js
 
-
+docker exec -it chat-postgres psql -U postgres -d chatapp
 
 curl -X POST http://localhost:3000/users -H "Content-Type: application/json" -d '{"username":"Pablo","email":"pablo@gmail.com","password":"123456789"}'
 
@@ -27,4 +27,13 @@ curl -X POST http://localhost:3000/chats/private -H "Authorization: Bearer TOKEN
 
 curl -H "Authorization: Bearer TOKEN" http://localhost:3000/chats
 
-docker exec -it chat-postgres psql -U postgres -d chatapp
+curl -H "Authorization: Bearer TOKEN" http://localhost:3000/chats/1/messages
+
+INSERT INTO messages (chat_id, sender_id, content) VALUES ('1','1','Primeira mensagem de teste!');
+
+curl -X POST http://localhost:3000/chats/5/messages \
+  -H "Authorization: Bearer SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Olá! Minha primeira mensagem."
+  }'
