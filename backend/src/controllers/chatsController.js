@@ -113,6 +113,20 @@ async function getMessages(req, res) {
   try {
     const userId = req.user.id;
     const chatId = Number(req.params.id);
+    const limit = Number(req.query.limit) || 20;
+    const offset = Number(req.query.offset) || 0;
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      return res.status(400).json({
+        message: "O limite deve estar entre 1 e 100!"
+      });
+    }
+    if (!Number.isInteger(offset) || offset < 0) {
+      return res.status(400).json({
+        message: "O offset deve ser maior ou igual a 0!"
+      });
+    }
+
     if (Number.isNaN(chatId)) {
       return res.status(400).json({
         message: "Chat inválido."
@@ -138,11 +152,15 @@ async function getMessages(req, res) {
       FROM messages
       WHERE chat_id = $1
       AND deleted_at IS NULL
-      ORDER BY created_at ASC;
+      ORDER BY created_at ASC
+      LIMIT $2
+      OFFSET $3
       `,
-      [chatId]
+      [chatId, limit, offset]
     );
-    return res.status(200).json(mensagens.rows);
+    return res.status(200).json({
+      messages: mensagens.rows, limit, offset
+    });
 
   } catch (error) {
     console.error(error);
