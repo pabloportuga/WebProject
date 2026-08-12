@@ -276,10 +276,63 @@ async function editMessage(req, res) {
     });
   }
 }
+
+async function deleteMessage(req, res) {
+  try {
+    const userId = req.user.id;
+    const messageId = Number(req.params.id);
+
+    if (Number.isNaN(messageId)) {
+      return res.status(400).json({
+        message: "Mensagem inválida."
+      });
+    }
+
+    const mensagem = await pool.query(
+      `
+      SELECT id
+      FROM messages
+      WHERE id = $1
+      AND sender_id = $2
+      AND deleted_at IS NULL
+      `,
+      [messageId, userId]
+    );
+
+    if (mensagem.rows.length === 0) {
+      return res.status(404).json({
+        message: "Mensagem não encontrada ou você não pode excluí-la."
+      });
+    }
+
+    const mensagemDeletada = await pool.query(
+      `
+      UPDATE messages
+      SET deleted_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING id, chat_id, sender_id, deleted_at
+      `,
+      [messageId]
+    );
+    return res.status(200).json({
+      message: "Mensagem deletada com sucesso!",
+      mensagem: mensagemDeletada.rows[0]
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Um erro aconteceu!"
+    });
+  }
+
+}
+
 module.exports = {
   createPrivateChat,
   getChats,
   getMessages,
   sendMessage,
-  editMessage
+  editMessage,
+  deleteMessage
 }
