@@ -37,3 +37,8 @@ curl -X POST http://localhost:3000/chats/5/messages \
   -d '{
     "content": "Olá! Minha primeira mensagem."
   }'
+
+curl -X PATCH http://localhost:3000/chats/messages/1 \
+  -H "Authorization: Bearer SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"content":"Mensagem editada!"}'
