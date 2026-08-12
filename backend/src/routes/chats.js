@@ -17,4 +17,8 @@ router.get("/:id/messages",
   chatsController.getMessages
 );
 
+router.post('/:id/messages',
+  authMiddleware.validarToken,
+  chatsController.sendMessage
+);
 module.exports = router;
